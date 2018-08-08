@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
+const jwtservice = require('../services/jwt')
 exports.get_users = (req, res, next) => {
     User.find()
         .select('_id username email')
@@ -115,7 +116,11 @@ exports.login_user = (req, res, next) => {
                 bcrypt.compare(req.body.password, user.password, (err, check) => {
                     if (check) {
                         if (req.body.gethash) {
-                            
+                            token = jwtservice.generate_token(user)
+                            res.status(200).json({
+                                user,
+                                token
+                            })
                         }
                         else {
                             res.status(200).json({
