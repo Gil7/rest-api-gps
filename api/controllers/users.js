@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const jwtservice = require('../services/jwt')
 exports.get_users = (req, res, next) => {
     User.find()
-        .select('_id username email')
+        .select('_id username email name')
         .exec()
         .then(users => {
             res.status(200).json({
@@ -11,6 +11,7 @@ exports.get_users = (req, res, next) => {
                 users: users.map(user => {
                     return {
                         email: user.email,
+                        name: user.name,
                         username: user.username,
                         _id: user._id,
                         request: {
@@ -133,6 +134,31 @@ exports.login_user = (req, res, next) => {
                             message: 'Login fails',
                         })
                     }
+                })
+            }
+        }
+    })
+}
+exports.update_user = (req, res, next) => {
+    const userId = req.params.id
+    const newData = req.body
+    User.findByIdAndUpdate(userId, newData, (err, userUpdated) => {
+        if (err) {
+            return res.status(500).json({
+                error: err,
+                message: 'Error updating the user'
+            })
+        }
+        else {
+            if (!userUpdated) {
+                res.status(404).json({
+                    message: 'User not found'
+                })
+            }
+            else {
+                res.status(200).json({
+                    user: userUpdated,
+                    message: 'User modified correctly'
                 })
             }
         }
