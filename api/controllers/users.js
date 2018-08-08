@@ -27,7 +27,6 @@ exports.get_users = (req, res, next) => {
         })
 }
 exports.save_user = (req, res, next) => {
-    console.log(req.body)
     User.find({
         email: req.body.email
     })
@@ -92,5 +91,45 @@ exports.save_user = (req, res, next) => {
         res.status(500).json({
             error : err
         })
+    })
+}
+exports.login_user = (req, res, next) => {
+    
+    User
+    .findOne({email: req.body.email}, (err, user) => {
+        if (err) {
+            res.status(500).json({
+                message: `The emails doesn't exists`,
+                error: err
+            })
+        }
+        else {
+            
+            if (!user) {
+                res.status(404).json({
+                    message: `This user doesn't exists`,
+                })
+            }
+            else {
+                
+                bcrypt.compare(req.body.password, user.password, (err, check) => {
+                    if (check) {
+                        if (req.body.gethash) {
+                            
+                        }
+                        else {
+                            res.status(200).json({
+                                user
+                            })
+                        }
+                    }
+                    else {
+                        res.status(404).json({
+                            message: 'Login fails',
+                        })
+                    }
+                })
+            }
+        }
     })
 }

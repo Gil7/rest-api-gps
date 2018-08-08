@@ -4,5 +4,6 @@ const userController = require('../controllers/users')
 
 api.get('/', userController.get_users)
 api.post('/register', userController.save_user)
+api.post('/login', userController.login_user)
 
 module.exports = api
