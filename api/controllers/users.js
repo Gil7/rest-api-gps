@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const jwtservice = require('../services/jwt')
 exports.get_users = (req, res, next) => {
     User.find()
-        .select('_id username email name')
+        .select('_id username email name image')
         .exec()
         .then(users => {
             res.status(200).json({
@@ -14,6 +14,7 @@ exports.get_users = (req, res, next) => {
                         name: user.name,
                         username: user.username,
                         _id: user._id,
+                        image: user.image,
                         request: {
                             type: 'GET',
                             url: `http://localhost:3000/users/${user._id}`
@@ -163,4 +164,47 @@ exports.update_user = (req, res, next) => {
             }
         }
     })
+}
+exports.add_avatar = (req, res, next) => {
+    if (req.files) {
+        const userId = req.params.id
+        const file_path = req.files.avatar.path
+        console.log(file_path)
+        const file_split = file_path.split('\/')[2]
+        const filename = file_split
+        const file_ext = filename.split("\.")[1]
+        if (file_ext == 'png' || file_ext == 'jpeg' || file_ext == 'jpg' || file_ext == 'gif') {
+            User.findByIdAndUpdate(userId, {image: filename}, (err, userUpdated) => {
+                if (err) {
+                    return res.status(500).json({
+                        error: err,
+                        message: 'A error was ocurred'
+                    })
+                }
+                else {
+                    if (!userUpdated) {
+                        res.status(401).json({
+                            message: 'User not found'
+                        })
+                    }
+                    else {
+                        res.status(200).json({
+                            message: 'Avatar uploaded correclty',
+                            user: userUpdated
+                        })
+                    }
+                }
+            })
+        }
+        else {
+            res.status(200).json({
+                message: 'File type is not valid'
+            })
+        }
+    }
+    else {
+        res.status(200).json({
+            message: 'file is neccesary, valid extensions: png, jpg, gif'
+        })
+    }
 }

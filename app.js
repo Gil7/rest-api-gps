@@ -6,8 +6,10 @@ const users_router = require('./api/routes/users')
 //body parser config
 app.use(bodyParser.urlencoded({urlencoded : false}))
 app.use(bodyParser.json())
-//headers configuration
 
+app.use('/uploads/users', express.static('uploads/users'))
+
+//headers configuration
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
