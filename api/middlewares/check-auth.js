@@ -12,6 +12,7 @@ exports.verify_auth = (req, res, next) => {
             const token = req.headers.authorization
             const payload = jwt.decode(token, process.env.JWT_KEY)
             if (payload.exp <= moment().unix()) {
+                console.log('correcto')
                 return res.status(401).json({
                     message: 'Token expired'
                 })
@@ -20,7 +21,7 @@ exports.verify_auth = (req, res, next) => {
                 req.user = payload
             }
         } catch (error) {
-            
+            console.log('error')
             return res.status(500).json({
                 message: 'Token is not valid'
             })

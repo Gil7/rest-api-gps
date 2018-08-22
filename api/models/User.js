@@ -14,7 +14,10 @@ const UserSchema = mongoose.Schema({
         required: true,
     },
     role: String,
-    image: String
+    image: String,
+    phone : {
+        type : String,
+    }
 })
 
 module.exports = mongoose.model('User', UserSchema)
